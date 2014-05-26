@@ -16,6 +16,7 @@ public class Table {
 	private Player[] players;
 	private PlayHand cardsInPlay;
 	private int ID;
+	private boolean playingTime;
 	
 	/**
 	 * Initialize a new table.
@@ -23,6 +24,7 @@ public class Table {
 	public Table(){
 		players = new Player[4];
 		cardsInPlay = new PlayHand();
+		playingTime = false;
 	}
 	
 	/**
@@ -31,6 +33,14 @@ public class Table {
 	 */
 	public void setID(int id){
 		ID = id;
+	}
+	
+	/**
+	 * Return tableID
+	 * @return
+	 */
+	public int getID(){
+		return ID;
 	}
 	
 	/**
@@ -83,14 +93,36 @@ public class Table {
 	 * That method should be called when any player wants to leave table.
 	 * @param side
 	 */
-	public void stand(Side side){
-		players[side.ordinal()] = null;
+	public void stand(Player player){
+		for(int i=0; i<players.length; i++){
+			if(players[i]!=null)
+				players[i].playerLeavesGame(player);
+		}
+		players[player.getSide().ordinal()] = null;
+		if(playingTime){
+			stopGame();
+		}
+	}
+	
+	/**
+	 * That method should be called when game is completed or 
+	 * any player leaves game during playing.
+	 */
+	public void stopGame(){
+		for(int i=0; i<players.length; i++){
+			if(players[i]!=null){
+				players[i].gameStopped();
+			}
+		}
+		playingTime = false;
 	}
 	
 	/**
 	 * The method is called when the table is ready to start game.
 	 */
 	public void startGame(){
+		playingTime = true;
+		cardsInPlay = new PlayHand();
 		for(int i=0; i<players.length; i++){
 			Player cur = players[i];
 			cur.sendMessage("your name is "+cur.getName()+" your side is "+cur.getSide().name());
@@ -108,19 +140,23 @@ public class Table {
 	public void makeMove(Player player, Card card){
 		cardsInPlay.setCard(card);
 		for(int i=0; i<players.length; i++){
-			players[i].newMoveMade(player, card);
+			if(players[i]!=null)
+				players[i].newMoveMade(player, card);
 		}
 		if(cardsInPlay.allDone()){
 			Side winner = cardsInPlay.winner();
 			for(int i=0; i<players.length; i++){
-				players[i].winnerSide(winner);
+				if(players[i]!=null)
+					players[i].winnerSide(winner);
 			}
 			cardsInPlay.nextHand();
 			cardsInPlay.setLeader(winner);
-			players[winner.ordinal()].yourTurn();
+			if(players[winner.ordinal()]!=null)
+				players[winner.ordinal()].yourTurn();
 		}else{
 			Side nextSide = cardsInPlay.next();
-			players[nextSide.ordinal()].yourTurn();
+			if(players[nextSide.ordinal()]!=null)
+				players[nextSide.ordinal()].yourTurn();
 		}
 	}
 	
@@ -142,4 +178,5 @@ public class Table {
 	public Player getPlayer(Side side){
 		return players[side.ordinal()];
 	}
+	
 }

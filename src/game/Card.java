@@ -76,7 +76,13 @@ public class Card {
 	 */
 	private static Nominal parseNominal(String nominal){
 		nominal = nominal.toUpperCase();
-		return Nominal.valueOf(nominal);
+		Nominal res;
+		try{
+			res = Nominal.valueOf(nominal);
+		}catch(Exception e){
+			res = null;
+		}
+		return res;
 	}
 	
 	/**
@@ -86,7 +92,13 @@ public class Card {
 	 */
 	private static Suit parseSuit(String suit){
 		suit = suit.toUpperCase();
-		return Suit.valueOf(suit);
+		Suit res;
+		try{
+			res = Suit.valueOf(suit);
+		}catch(Exception e){
+			res = null;
+		}
+		return res;
 	}
 	
 	/**

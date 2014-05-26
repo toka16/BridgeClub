@@ -153,4 +153,20 @@ public class Player {
 	public void sendMessage(String msg){
 		socket.sendMsg(msg);
 	}
+	
+	/**
+	 * That method should be called by table when any player leaves table.
+	 * @param player - player who has left the table
+	 */
+	public void playerLeavesGame(Player player){
+		sendMessage("player "+player.getName() +" on side "+player.getSide()+" leaves game");
+	}
+	
+	/**
+	 * That method should be called when game stops
+	 */
+	public void gameStopped(){
+		myTurn = false;
+		sendMessage("game stopped");
+	}
 }

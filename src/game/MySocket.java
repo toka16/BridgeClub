@@ -1,10 +1,6 @@
 package game;
 
-//import game.Table.Side;
-
 import game.Table.Side;
-
-import java.io.IOException;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
@@ -39,8 +35,8 @@ public class MySocket {
 	public void OnOpen(Session s){
 		session = s;
 		user = new User("user"+index++, Status.USER);
-		sendMsg("your name is "+user.getUsername());
 		table = AllInfo.getTableAt(0);
+		sendMsg("your name is "+user.getUsername()+" and you can sit at table: "+table.getID());
 		System.out.println("new user added");
 	}
 	
@@ -65,12 +61,25 @@ public class MySocket {
 			}
 		}else if(msg.startsWith("move")){
 			String cardString = msg.substring(5);
-			int devider = cardString.indexOf(":");
+			int devider;
+			try{
+				devider = cardString.indexOf(":");
+			}catch(Exception e){
+				sendMsg("illegal card");
+				return;
+			}
+			if(devider<0){
+				sendMsg("illegal card");
+				return;
+			}
 			String nominal = cardString.substring(0, devider);
 			String suit = cardString.substring(devider+1);
 			Card c = Card.parse(nominal, suit);
 			if(c.isValid())
-				player.makeMove(c);
+				if(player!=null)
+					player.makeMove(c);
+				else
+					sendMsg("you cant move card, you are not sitting at a table");
 			else
 				sendMsg("card "+cardString+" doesn't exist");
 		}
@@ -125,7 +134,8 @@ public class MySocket {
 	 */
 	@OnClose
 	public void OnClose(Session s){
-		table.stand(player.getSide());
+		if(table!=null && player!=null) //if client sits at the table
+			table.stand(player);
 	}
 	
 	
@@ -135,11 +145,9 @@ public class MySocket {
 	 */
 	public void sendMsg(String msg){
 		try {
-			if(session.isOpen())
+			if(session != null && session.isOpen())
 				session.getBasicRemote().sendText(msg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		} catch (Exception ignore) {}
 	}
 
 	/**

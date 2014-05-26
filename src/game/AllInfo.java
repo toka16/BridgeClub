@@ -25,10 +25,9 @@ public class AllInfo {
 	}
 	
 	public static synchronized Table getTableAt(int index){
-		Table res = null;
-		if(index >= 0 && index < list.size())
-			res = list.get(index);
-		System.out.println("table returned "+res);
+//		Table res = null;
+//		if(index >= 0 && index < list.size())
+//			res = list.get(index);
 		return t;
 	}
 	

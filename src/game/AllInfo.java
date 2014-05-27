@@ -31,10 +31,10 @@ public class AllInfo {
 		return t;
 	}
 	
-	public static synchronized void removeTableAr(int index){
-		if(index >= 0 && index < list.size())
-			list.remove(index);
-	}
+//	public static synchronized void removeTableAr(int index){
+//		if(index >= 0 && index < list.size())
+//			list.remove(index);
+//	}
 	
 	public static synchronized void addUser(User u){
 		map.put(u.getUsername(), u);

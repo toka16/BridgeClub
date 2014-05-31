@@ -55,9 +55,11 @@ public class MySocket {
 			}
 		}else if(msg.startsWith("init")){
 			String name = msg.substring(5);
-			user = AccountManager.getUser(name);
-			user.setSocket(this);
-			sendMsg("your name is "+user.getUsername()+" and you can sit at table "+table.getID());
+			if(!name.equals("null")){
+				user = AccountManager.getUser(name);
+				user.setSocket(this);
+				sendMsg("your name is "+user.getUsername()+" and you can sit at table "+table.getID());
+			}
 		}else if(msg.startsWith("move")){
 			String cardString = msg.substring(5);
 			int devider;

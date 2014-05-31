@@ -8,8 +8,8 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+import servlets.AccountManager;
 import club.User;
-import club.User.Status;
 
 /**
  * WebSocket class for sending/getting information to/from clients.
@@ -23,9 +23,7 @@ public class MySocket {
 	private User user;
 	private Player player;
 	private Table table;
-	
-	private static int index=1; //droebiti ricxvi testirebistvis
-	
+		
 	
 	/**
 	 * Method that is called when client connects with server.
@@ -34,9 +32,7 @@ public class MySocket {
 	@OnOpen
 	public void OnOpen(Session s){
 		session = s;
-		user = new User("user"+index++, Status.USER);
 		table = AllInfo.getTableAt(0);
-		sendMsg("your name is "+user.getUsername()+" and you can sit at table: "+table.getID());
 		System.out.println("new user added");
 	}
 	
@@ -52,13 +48,16 @@ public class MySocket {
 			String side = msg.substring(6);
 			Side s = Table.parseSide(side);
 			if(table.isAvaliable(s)){
-				player = new Player(user.getUsername(), s);
-				player.setSocket(this);
+				player = new Player(user, s);
 				table.sit(player, s);
-				player = table.getPlayer(s);
 			}else{
 				sendMsg(side+" side is already taken");
 			}
+		}else if(msg.startsWith("init")){
+			String name = msg.substring(5);
+			user = AccountManager.getUser(name);
+			user.setSocket(this);
+			sendMsg("your name is "+user.getUsername()+" and you can sit at table "+table.getID());
 		}else if(msg.startsWith("move")){
 			String cardString = msg.substring(5);
 			int devider;
@@ -134,8 +133,9 @@ public class MySocket {
 	 */
 	@OnClose
 	public void OnClose(Session s){
-		if(table!=null && player!=null) //if client sits at the table
-			table.stand(player);
+		if(player!=null){
+			player.leaveGame();
+		}
 	}
 	
 	

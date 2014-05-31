@@ -4,30 +4,31 @@ import game.Table.Side;
 
 import java.util.ArrayList;
 
+import club.User;
+
 /**
  * Player that is sitting at table
  * @author toka
  *
  */
 public class Player {
-	private String name;
 	private CardList cards;
 	private Side side;
 	private Table table;
 	private boolean myTurn;
-	private MySocket socket;
+	private User user;
 	
 	/**
 	 * Constructor for player
 	 * @param name - player name
 	 * @param s - side where player sits
 	 */
-	public Player(String name, Side s){
-		this.name = name;
+	public Player(User user, Side s){
 		side = s;
 		cards = new CardList();
 		table = null;
 		myTurn = false;
+		this.user = user;
 	}
 	
 	/**
@@ -60,7 +61,7 @@ public class Player {
 	 * @return
 	 */
 	public String getName(){
-		return name;
+		return user.getUsername();
 	}
 	
 	/**
@@ -87,13 +88,6 @@ public class Player {
 		table = t;
 	}
 	
-	/**
-	 * Set socket for client comunication
-	 * @param socket
-	 */
-	public void setSocket(MySocket socket){
-		this.socket = socket;
-	}
 	
 	/**
 	 * That method is called by client using WebSocket when client wants
@@ -117,7 +111,7 @@ public class Player {
 	 * @param card
 	 */
 	public void newMoveMade(Player player, Card card){
-		socket.moveIsMaden(player, card);
+		user.newMoveMade(player, card);
 	}
 	
 	/**
@@ -125,7 +119,7 @@ public class Player {
 	 * @param winner
 	 */
 	public void winnerSide(Side winner){
-		socket.winnerSide(winner);
+		user.winnerSide(winner);
 	}
 	
 	/**
@@ -134,7 +128,7 @@ public class Player {
 	 */
 	public void yourTurn(){
 		myTurn = true;
-		socket.yourTurn();
+		user.yourTurn();
 	}
 	
 	/**
@@ -143,15 +137,15 @@ public class Player {
 	 * @param side
 	 */
 	public void newPlayer(Player player, Side side){
-		socket.newPlayerAdded(player, side);
+		user.newPlayerAdded(player, side);
 	}
 	
 	/**
-	 * Send information to client
+	 * Send information to user
 	 * @param msg
 	 */
 	public void sendMessage(String msg){
-		socket.sendMsg(msg);
+		user.sendMessage(msg);
 	}
 	
 	/**
@@ -159,7 +153,15 @@ public class Player {
 	 * @param player - player who has left the table
 	 */
 	public void playerLeavesGame(Player player){
-		sendMessage("player "+player.getName() +" on side "+player.getSide()+" leaves game");
+		user.playerLeavesGame(player);
+	}
+	
+	/**
+	 * That method should be called by user when he/she wants to leave game.
+	 */
+	public void leaveGame(){
+		if(table!=null)
+			table.stand(this);
 	}
 	
 	/**
@@ -167,6 +169,6 @@ public class Player {
 	 */
 	public void gameStopped(){
 		myTurn = false;
-		sendMessage("game stopped");
+		user.gameStopped();
 	}
 }

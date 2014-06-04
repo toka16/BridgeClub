@@ -6,3 +6,5 @@ public class StaticVariables {
 	public static enum Nominals {e0, e1, DEUCE, TRIPLE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE}; 
 	public static enum Vulnerables {NOLINE, NS, EW, BOTHLINES};
 }
+
+//test change

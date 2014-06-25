@@ -1,0 +1,37 @@
+@CHARSET "ISO-8859-1";
+
+div {
+    cursor: default;
+}
+ul.menuMain {
+	margin: 0;
+	padding: 0;
+	z-index: 598;
+}
+ul.menuMain li {
+	display:block;
+	z-index: 598;
+}
+ul.menuMain li a:hover {
+	color:#984;
+}
+ul.menuMain li:hover > ul {
+	visibility: visible;
+}
+ul.menuMain li.hover,
+ul.menuMain li:hover {
+	position: relative;
+	cursor: pointer;
+}
+ul.menuSub li {
+	padding: 0;
+	z-index: 598;
+}
+ul.menuSub {
+	visibility: hidden;
+	position: absolute;
+	padding:10px;
+	border-right: 1px solid #000;
+	border-bottom: 1px solid #000;
+	border-left: 1px solid #000;
+}
